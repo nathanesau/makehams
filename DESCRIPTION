@@ -1,9 +1,9 @@
 Package: makehams
 Type: Package
-Title: What the package does (short line)
+Title: Ultimate Select Survival Model
 Version: 1.0
 Date: 2015-02-15
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Author: Nathan Esau
+Maintainer: Nathan Esau <nesau@sfu.ca>
+Description: Insurances, annuities and Reserve functions are implemented using the Ultimate Select Survival Model from Actuarial Mathematics for Life Contingent Risks (Makeham's Law, DHW)
+License: GPL-2

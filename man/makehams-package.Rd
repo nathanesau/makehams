@@ -3,12 +3,10 @@
 \alias{makehams}
 \docType{package}
 \title{
-What the package does (short line)
-~~ package title ~~
+Ultimate Select Surival Model
 }
 \description{
-More about what it does (maybe more than one line)
-~~ A concise (1-5 lines) description of the package ~~
+Several actuarial functions have been implemented for performing calculations using the Makeham's Law Model. 
 }
 \details{
 \tabular{ll}{
@@ -16,25 +14,19 @@ Package: \tab makehams\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
 Date: \tab 2015-02-15\cr
-License: \tab What license is it under?\cr
+License: \tab GPL-2\cr
 }
-~~ An overview of how to use the package, including the most important functions ~~
+You can use the reserve, insurances and annuties functions directly. Survival probabilities can be accessed using the tpx function. By default, a select period (of 2) is used for all calculations, but this can be changed by using the global variables. Global variables can be updated using the updateParams function.
 }
 \author{
-Who wrote it
+Nathan Esau
 
-Maintainer: Who to complain to <yourfault@somewhere.net>
-~~ The author and/or maintainer of the package ~~
+Maintainer: Nathan Esau <nesau@sfu.ca>
 }
 \references{
-~~ Literature or other references for background information ~~
+Actuarial mathematics for life contingent risks / David C M Dickson, Mary R Hardy, Howard R Waters. - 2nd edition.
 }
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R documentation directory ~~
-\keyword{ package }
-\seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
-}
+
 \examples{
-~~ simple examples of the most important functions ~~
+updateParams(c("A","B","c"),c(0.00022,2.7e-06,1.124))
 }
