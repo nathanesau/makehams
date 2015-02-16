@@ -1,0 +1,73 @@
+%%%%%%%%%%%%%%%%%%%%%
+% Packages
+%%%%%%%%%%%%%%%%%%%%%
+\documentclass{report}  
+\usepackage{amsmath}		
+\usepackage{amssymb}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{titlesec}
+\usepackage[margin=1.0in]{geometry}
+\usepackage{graphicx}
+\usepackage{imakeidx}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{Nathan Esau <nesau@sfu.ca>}
+\rhead{February 15th, 2015}
+
+%\VignetteIndexEntry{User Guide}
+%\VignetteDepends{}
+%\VignetteKeywords{Vignettes}
+
+%%%%%%%%%%%%%%%%%%%%%
+% Format
+%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\makeatother
+\makeindex
+\graphicspath{ {images/} }
+
+%%%%%%%%%%%%%%%%%%%%%
+% Start
+%%%%%%%%%%%%%%%%%%%%%
+\begin{document}\large{}
+\SweaveOpts{concordance=TRUE}
+
+\section*{Makeham's User Guide} 
+
+This guide provides important details regarding the implementation of Makeham's Law in R.
+
+\subsection*{Select Period}
+
+An important implementation detail is regarding the select period. In all cases, a select period is assumed by default when using an actuarial function. This means that
+
+\begin{itemize}
+\item ${}_tp_{[x]}$ is implemented such that using a non-zero $s$ arugment results in ${}_tp_{[x]+s}$
+\item $A_{[x]}$ is implemented such that using a non-zero $s$ arugment results in $A_{[x]+s}$
+\item $\mu_{[x]}$ is implemented such that using a non-zero $s$ argument results in $\mu_{[x]+s}$ \\
+\vdots
+\end{itemize}
+
+For instance, lets say that the select period is 2 and the value of $A_{20}$ is wanted. Calling \texttt{Ax(20,s=2)} actually gives the value $A_{[20]+2}$ and not $A_{20}$. Therefore, this value would have to be calculated as $A_{[18]+2}$ which is \texttt{Ax(18,s=2)}
+
+To generalize the model to any select period, numerical integration was used in the implementation of several functions. For instance, the functions implementing ${}_tp_{x}$ and $A_{x}$ use numerical integration. Although this provides for flexibility in changing the model parameters, the disadvantages of such an approach are
+\begin{itemize}
+\item Running code such as building life tables takes noticeably longer when a large select period is used, such as $d=10$
+\item In addition to a function using numerical integration potentially being slow, it is also less accurate than solving an integral before programming the function
+\end{itemize}
+
+\subsection*{Optional arguments}
+Typically, as is the case with the $A_{[x]}$ function, rather than implementing new functions such as $\bar{A}_{[x]}$, these are optional parameters to the existing function. For instance, $\bar{A}_{[x]}$ can be calculate as \texttt{Ax(x,c=1)} where $c$ is an optional parameter indicating that a continuous expected present value should be calculated.
+
+<<lifetable, include=TRUE, echo=TRUE>>=
+library(makehams)
+head(createLifeTable(x=20))
+@
+
+%%%%%%%%%%%%%%%%%%%%%
+% End
+%%%%%%%%%%%%%%%%%%%%%
+\end{document}
