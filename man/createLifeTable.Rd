@@ -2,7 +2,7 @@
 % Please edit documentation in R/makehams.R
 \name{createLifeTable}
 \alias{createLifeTable}
-\title{Create ultimate Select Life Table}
+\title{Create Ultimate Select Life Table}
 \usage{
 createLifeTable(x = global$x, w = global$w, radix = global$radix,
   d = global$d)

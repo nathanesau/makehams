@@ -67,6 +67,32 @@ library(makehams)
 head(createLifeTable(x=20))
 @
 
+Another table that can be readily accessed is the insurance table.\footnote{note that the optional argument $s$ is the select already used. For $A[x]$ this is 0 and for $A[x]+d$ this is $d$}
+<<insurancetable, include=TRUE, echo=TRUE>>=
+head(createInsuranceTable(x=20))
+@
+
+\subsection*{Recursions}
+The following recursion relationships hold
+\begin{align*}
+A_{[x]+d} &= A_{x+d} \\
+A_{[x]+d-1} &= q_{[x]+d-1}v + p_{[x]+d-1}v(A_{x+d}) \\
+A_{[x]+d-2} &= q_{[x]+d-2}v + p_{[x]+d-2}v(A_{[x]+d-1}) \\
+\vdots \\
+A_{[x]} &= q_{[x]}v + p_{[x]}v(A_{[x]+1})
+\end{align*}
+
+where $A_{x+d}$ can be calculated recursively using
+\begin{equation}
+A_{x} = vq_{x} + vp_{x}A_{x+1}
+\end{equation}
+
+Therefore the approach is to 
+\begin{itemize}
+\item Calculate $A_{x+d}$ for $x$ = $\omega - d - 1$ to $x - d$
+\item Calculate $A_{[x]+d-t}$ for $t = 1$ to $d$ using $x$ = $\omega - d - 1$ to $x - d$
+\end{itemize}
+
 %%%%%%%%%%%%%%%%%%%%%
 % End
 %%%%%%%%%%%%%%%%%%%%%

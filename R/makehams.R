@@ -34,7 +34,7 @@ uxt <- function(t,x=global$x,s=0,d=global$d,A=global$A, B=global$B, c=global$c) 
 #' @details Uses a default select period of 2, but this can be changed in global$d
 #' @export
 tpx <- function(t,x=global$x,s=0) {  
-  (x+t<global$w)*sapply(t, function(t) exp(-integrate(function(l) uxt(l, x, s), 0, t)$value))
+  (x+t+s<global$w)*sapply(t, function(t) exp(-integrate(function(l) uxt(l, x, s), 0, t)$value))
 }
 
 #' @title CDF of Future Lifetime
@@ -59,7 +59,7 @@ udeferredtqx <- function(u,t=1,x=global$x,s=0) {
   sapply(u, function(u) tpx(u, x, s) - tpx(u + t, x,s))
 }
 
-#' @title Create ultimate Select Life Table
+#' @title Create Ultimate Select Life Table
 #' @description Creates a life table based on the select period, radix and Makeham model parameters
 #' @param x the starting age for the life table
 #' @param w the limiting age 
@@ -67,8 +67,7 @@ udeferredtqx <- function(u,t=1,x=global$x,s=0) {
 #' @param d the select period
 #' @details See Appendix Tables of DHW 2nd edition
 createLifeTable <- function(x=global$x, w=global$w, radix=global$radix, d=global$d) {
-  lt = data.frame(
-      c(rep(NA,d), x:(w-d-1)),
+  lt = data.frame(c(rep(NA,d), x:(w-d-1)),
           lapply(0:(d-1), function(y) c(rep(NA,d), tail(tpx(0:(w-x-1),x-d,s=d)* radix,-d)/sapply(x:(w-d-1), function(x) tpx(d-y,x,y)))),
               tpx(0:(w-x-1),x-d,s=d)*radix, x:(w-1))
   names(lt) =  c("x", sapply(0:(d-1), function(x) paste0("l[x]+",x)), paste0("lx+",d),"x+2")
@@ -115,4 +114,74 @@ Ax <- function(x=global$x,s=0,i=global$i,m=1,n=global$w-x,c=0,e=0,mt=1) {
     ifelse(e,tm+tpx(n,x,s)*v(i,n,delta=log(1+i)*mt),tm)
   }
  Ax(x,s,d=global$d,w=global$w,i,m,n,c,e,mt)
+}
+
+
+#' @title EPV of Annuity
+#' @description Calculates the Expected Presented Value of various annuities
+#' @param x the current age
+#' @param s the select used so far
+#' @param i the interest rate
+#' @param m the compounding frequency
+#' @param n the length of the term
+#' @param c indicator of continuous (1 if continuous)
+#' @param e indicator of endowment (NOTE of an annuity should always be 1)
+#' @param mt the moment of the insurance
+#' @details Default: first moment of discrete, whole life annuity due
+#' @export
+ax <- function(x=global$x,s=0,i=global$i,m=1,n=global$w-x,c=0,e=1,mt=1) {
+  (1 - Ax(x,s,i,m,n,c,e,mt))/d(i,m)
+} 
+
+#' @title Actuarial Present Value Factor
+#' @description Calculates the Expected Present value of a pure endowment insurance
+#' @param t the years from x
+#' @param x the current age
+#' @param s the select used so far
+#' @param i the interest rate
+#' @param mt the moment of the insurance
+#' @details Alternative actuarial "A" notation is also used for tEx
+#' @export
+tEx <- function(t,x=global$x,s=0,i=global$i,mt=1) {
+  tpx(t,x,s)*v(i,t,delta=mt*log(1+i))
+}
+
+#' @title Create Insurance Table
+#' @description Creates a table containing EPV's of whole life insurances (discrete)
+#' @param x the starting age
+#' @param w the limiting age
+#' @param d the select period
+#' @param i the interest rate
+#' @param mt the moment t calculate
+#' @param n pure endowment period
+#' @details Computes life table using recursion
+#' @export
+createInsuranceTable <- function(x=global$x, w=global$w, d=global$d, n=5, i=global$i, mt=1) {
+  i = exp(mt*log(1+i)) - 1
+  Ax = vector("list",d+1); Ex = vector("list",d+1); p = vector("list", d+1)
+  
+  recins <- function(p, init=F, Ax=NA) { # Calculate A[x] values using recursion
+    prev = v(i,1); A = prev
+    for(t in (w-d-1):x) {
+      prev=ifelse(init, (1-p[t-x+1])*v(i,1) + p[t-x+1]*v(i,1)*prev, (1-p[t-x+1])*v(i,1) + p[t-x+1]*v(i,1)*Ax[t-x+1])
+      A = c(A, prev)
+    } 
+    rev(A)
+  }
+  
+  p = lapply(0:d,  function(t) sapply((w-d-1):x, function(s) tpx(1,s,t)))
+  for(t in d:0) {
+    if(t==d) Ax[[t+1]] = recins(rev(p[[t+1]]), T) 
+    else Ax[[t+1]] = recins(rev(p[[t+1]]), F, Ax[[t+2]])
+    Ex[[t+1]] = sapply(x:(w-d), function(s) tEx(5,s,t,i,mt))
+  }
+  
+  it = data.frame(x:(w-d), Ax, Ex, x:(w-d)+2) # combine lists into data frame
+  names(it) = c("x", paste0(ifelse(mt==1, "", mt), "A[x]"), 
+                sapply(1:(d-1), function(d) paste0(ifelse(mt==1, "", mt), "A[x]+", d)), 
+                  paste0(ifelse(mt==1, "", mt), "Ax+", d), paste0(ifelse(mt==1, "", paste0(mt,":")), paste0(n,"E[x]")), 
+                sapply(1:(d-1), function(d) paste0(ifelse(mt==1, "", paste0(mt,":")), paste0(n,"E[x]+"), d)),
+                  paste0(ifelse(mt==1, "", paste0(mt,":")), paste0(n, "Ex+"), d),
+                "x+2")
+  head(it,-1)
 }

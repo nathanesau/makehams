@@ -79,6 +79,43 @@ Typically, as is the case with the $A_{[x]}$ function, rather than implementing 
 \end{Soutput}
 \end{Schunk}
 
+Another table that can be readily accessed is the insurance table.\footnote{note that the optional argument $s$ is the select already used. For $A[x]$ this is 0 and for $A[x]+d$ this is $d$}
+\begin{Schunk}
+\begin{Sinput}
+> head(createInsuranceTable(x=20))
+\end{Sinput}
+\begin{Soutput}
+   x       A[x]     A[x]+1       Ax+2     5E[x]   5E[x]+1     5Ex+2 x+2
+1 20 0.04917546 0.05143193 0.05377599 0.7825547 0.7825077 0.7824769  22
+2 21 0.05139908 0.05376425 0.05622182 0.7825368 0.7824872 0.7824536  23
+3 22 0.05373095 0.05620990 0.05878622 0.7825168 0.7824641 0.7824275  24
+4 23 0.05617607 0.05877410 0.06147464 0.7824942 0.7824381 0.7823980  25
+5 24 0.05873967 0.06146230 0.06429274 0.7824688 0.7824089 0.7823650  26
+6 25 0.06142720 0.06428015 0.06724641 0.7824403 0.7823761 0.7823278  27
+\end{Soutput}
+\end{Schunk}
+
+\subsection*{Recursions}
+The following recursion relationships hold
+\begin{align*}
+A_{[x]+d} &= A_{x+d} \\
+A_{[x]+d-1} &= q_{[x]+d-1}v + p_{[x]+d-1}v(A_{x+d}) \\
+A_{[x]+d-2} &= q_{[x]+d-2}v + p_{[x]+d-2}v(A_{[x]+d-1}) \\
+\vdots \\
+A_{[x]} &= q_{[x]}v + p_{[x]}v(A_{[x]+1})
+\end{align*}
+
+where $A_{x+d}$ can be calculated recursively using
+\begin{equation}
+A_{x} = vq_{x} + vp_{x}A_{x+1}
+\end{equation}
+
+Therefore the approach is to 
+\begin{itemize}
+\item Calculate $A_{x+d}$ for $x$ = $\omega - d - 1$ to $x - d$
+\item Calculate $A_{[x]+d-t}$ for $t = 1$ to $d$ using $x$ = $\omega - d - 1$ to $x - d$
+\end{itemize}
+
 %%%%%%%%%%%%%%%%%%%%%
 % End
 %%%%%%%%%%%%%%%%%%%%%
