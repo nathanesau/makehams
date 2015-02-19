@@ -4,8 +4,8 @@
 \alias{createInsuranceTable}
 \title{Create Insurance Table}
 \usage{
-createInsuranceTable(x = global$x, w = global$w, d = global$d, n = 5,
-  i = global$i, mt = 1)
+createInsuranceTable(x = gl.g(x), w = gl.g(w), d = gl.g(d), n = 5,
+  i = gl.g(i), mt = 1)
 }
 \arguments{
 \item{x}{the starting age}

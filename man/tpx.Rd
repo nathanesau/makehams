@@ -4,7 +4,7 @@
 \alias{tpx}
 \title{Survival Function}
 \usage{
-tpx(t, x = global$x, s = 0)
+tpx(t, x = gl.g(x), s = 0, uxt = gl.g(uxt))
 }
 \arguments{
 \item{t}{the number of years to survive}
@@ -12,11 +12,13 @@ tpx(t, x = global$x, s = 0)
 \item{x}{the current age}
 
 \item{s}{select already used}
+
+\item{uxt}{the force of mortality (can be used to override the default force of mortality)}
 }
 \description{
 Probability that x survives t years given survival to age x
 }
 \details{
-Uses a default select period of 2, but this can be changed in global$d
+Uses a default select period of 2 (for makeham's law)
 }
 

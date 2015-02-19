@@ -4,7 +4,7 @@
 \alias{d}
 \title{Nominal rate of discount}
 \usage{
-d(i = global$i, m = 1)
+d(i = gl.g(i), m = 1)
 }
 \arguments{
 \item{i}{the effective annual interest rate}
@@ -17,4 +17,5 @@ Calculates the interest rate used for annuity due's
 \details{
 Uses the relation (1-d) = (1-d(m)/m)^(-m)
 }
+\keyword{internal}
 

@@ -1,9 +1,9 @@
 Package: makehams
-Type: Package
-Title: Ultimate Select Survival Model
+Title: Ultimate Select Survival Model (AMLCR)
 Version: 1.0
-Date: 2015-02-15
-Author: Nathan Esau
-Maintainer: Nathan Esau <nesau@sfu.ca>
-Description: Insurances, annuities and Reserve functions are implemented using the Ultimate Select Survival Model from Actuarial Mathematics for Life Contingent Risks (Makeham's Law, DHW)
+Authors@R: person("Nathan", "Esau", email="nesau@sfu.ca", role = c("aut", "cre", "ctb"))
+Description: Implements Makeham's Law (with variable select period), De Moivre's Law, CFM as 
+  well as provides various actuarial functions such as moments of insurances and annuities.
+Depends: R (>= 2.1.1)
 License: GPL-2
+LazyData: true

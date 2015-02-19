@@ -4,7 +4,7 @@
 \alias{tEx}
 \title{Actuarial Present Value Factor}
 \usage{
-tEx(t, x = global$x, s = 0, i = global$i, mt = 1)
+tEx(t, x = gl.g(x), s = 0, i = gl.g(i), mt = 1)
 }
 \arguments{
 \item{t}{the years from x}

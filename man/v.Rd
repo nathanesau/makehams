@@ -4,7 +4,7 @@
 \alias{v}
 \title{Present Value Factor}
 \usage{
-v(i = global$i, n = 1, delta = log(1 + i))
+v(i = gl.g(i), n = 1, delta = log(1 + i))
 }
 \arguments{
 \item{i}{the effective annual interest rate}
@@ -12,10 +12,11 @@ v(i = global$i, n = 1, delta = log(1 + i))
 \item{n}{the number of years to apply discounting}
 
 \item{delta}{the force of interest}
-
-\item{The}{force of interest is internally derived from the effective annual interest rate}
 }
 \description{
 Calculates the present value of a cash flow
+}
+\details{
+The force of interest is internally derived from the effective annual interest rate
 }
 

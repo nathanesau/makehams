@@ -4,8 +4,8 @@
 \alias{uxt}
 \title{Force of Mortality}
 \usage{
-uxt(t, x = global$x, s = 0, d = global$d, A = global$A, B = global$B,
-  c = global$c)
+uxt(t, x = gl.g(x), s = 0, d = gl.g(d), A = gl.g(A), B = gl.g(B),
+  c = gl.g(c))
 }
 \arguments{
 \item{t}{the years after age x}
@@ -13,6 +13,8 @@ uxt(t, x = global$x, s = 0, d = global$d, A = global$A, B = global$B,
 \item{x}{the current age}
 
 \item{s}{select already used}
+
+\item{d}{the select period}
 
 \item{A}{Makeham model parameter}
 

@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%
 % Packages
 %%%%%%%%%%%%%%%%%%%%%
-\documentclass{report}  
+\documentclass{article}  
 \usepackage{amsmath}		
 \usepackage{amssymb}
 \usepackage{parskip}
@@ -17,6 +17,7 @@
 \pagestyle{fancy}
 \lhead{Nathan Esau <nesau@sfu.ca>}
 \rhead{February 15th, 2015}
+\allowdisplaybreaks
 
 %\VignetteIndexEntry{User Guide}
 %\VignetteDepends{}
@@ -36,11 +37,19 @@
 \begin{document}\large{}
 \SweaveOpts{concordance=TRUE}
 
-\section*{Makeham's User Guide} 
+\section{Makeham's User Guide} 
 
 This guide provides important details regarding the implementation of Makeham's Law in R.
 
-\subsection*{Select Period}
+\subsection{Overriding Functions}
+Functions and variables used by the \texttt{makehams} package can be over-ridden using the \texttt{gl.a(var, val)} function and be accessed using \texttt{gl.g(var)} where var is the object name and val is value to be assigned. Additionally, all defined variables in the environment can be listed using the following technique.
+
+<<echo=TRUE>>=
+library(makehams)
+ls(envir=gl)
+@
+
+\subsection{Select Period}
 
 An important implementation detail is regarding the select period. In all cases, a select period is assumed by default when using an actuarial function. This means that
 
@@ -59,7 +68,7 @@ To generalize the model to any select period, numerical integration was used in 
 \item In addition to a function using numerical integration potentially being slow, it is also less accurate than solving an integral before programming the function
 \end{itemize}
 
-\subsection*{Optional arguments}
+\subsection{Optional arguments}
 Typically, as is the case with the $A_{[x]}$ function, rather than implementing new functions such as $\bar{A}_{[x]}$, these are optional parameters to the existing function. For instance, $\bar{A}_{[x]}$ can be calculate as \texttt{Ax(x,c=1)} where $c$ is an optional parameter indicating that a continuous expected present value should be calculated.
 
 <<lifetable, include=TRUE, echo=TRUE>>=
@@ -67,12 +76,12 @@ library(makehams)
 head(createLifeTable(x=20))
 @
 
-Another table that can be readily accessed is the insurance table.\footnote{note that the optional argument $s$ is the select already used. For $A[x]$ this is 0 and for $A[x]+d$ this is $d$}
+Another table that can be readily accessed is the insurance table.
 <<insurancetable, include=TRUE, echo=TRUE>>=
 head(createInsuranceTable(x=20))
 @
 
-\subsection*{Recursions}
+\subsection{Recursions}
 The following recursion relationships hold
 \begin{align*}
 A_{[x]+d} &= A_{x+d} \\
@@ -93,6 +102,53 @@ Therefore the approach is to
 \item Calculate $A_{[x]+d-t}$ for $t = 1$ to $d$ using $x$ = $\omega - d - 1$ to $x - d$
 \end{itemize}
 
+\subsection{Extension to Multiple Decrement Models}
+
+Consider the following example of a pension service table taken from \texttt{Actuarial Mathematics for Life Contingent Risks, 2nd edition}.
+
+\subsubsection*{Example 10.5}
+Using the following forces of decrement, build a pension plan service table for ages $x = 20$ to $x = 65$
+
+\begin{align*}
+\mu_{x}^{01} &= \begin{cases} 0.1 & x < 35 \\ 0.05 & 35 \leq x < 45 \\ 0.02 & 45 \leq x < 60 \\ 0 & x \geq 60 \end{cases} \\
+\mu_{x}^{02} &= \begin{cases} 0.01 \end{cases}\\
+\mu_{x}^{03} &= \begin{cases} 0 & x < 60 \\ 0.1 & 60 < x < 65 \end{cases}\\ 
+\mu_{x}^{04} &= \begin{cases} A + Bc^{x} \end{cases} \\
+\mu_{x}^{(\tau)} = \sum_{j=1}^{4} \mu_{x}^{(j)} 
+\end{align*}
+
+This could be implemented using the functions already built into makehams in the following way
+
+<<echo=TRUE>>=
+gl.a(uxt01, function(t,x=gl.g(x)) ifelse(x+t<35,0.1,
+        ifelse(x+t<45,0.05,ifelse(x+t<60,0.02,0))))
+gl.a(uxt02, function(t,x=gl.g(x)) t^0*0.001)
+gl.a(uxt03, function(t,x=gl.g(x)) 
+      ifelse(x+t<60,0,ifelse(x+t<65,0.1,0)))
+gl.a(uxt04, function(t,x=gl.g(x), A=gl.g(A), B=gl.g(B), 
+        c=gl.g(c)) A + B*c^(x+t)) 
+gl.a(uxt, function(t,x=gl.g(x),...) gl.g(uxt01)(t,x) + 
+       gl.g(uxt02)(t,x) + gl.g(uxt03)(t,x) + gl.g(uxt04)(t,x))
+gl.a(radix,1e+06)
+tpxij <- function(t,x=gl.g(x),uxt=gl.g(uxt)) {
+  integrate(function(s) tpx(s,x)*uxt(s,x), 0, t)$value
+}
+@
+
+Now that we have implemented the forces of decrement, we can build the service table
+<<echo=TRUE>>=
+p = tpx(0:45,20)
+st = data.frame(x = 20:65, lx=gl.g(radix)*p, wx=p*gl.g(radix)*
+          sapply(0:45, function(k) tpxij(1,20+k,uxt=gl.g(uxt01))),
+              ix=p*gl.g(radix)*sapply(0:45, function(k) tpxij(1,20+k,
+                uxt=gl.g(uxt02))), rx=p*gl.g(radix)*sapply(0:45, function(k)
+                  tpxij(1,20+k,uxt=gl.g(uxt03))), dx=p*gl.g(radix)*sapply(0:45,
+                    function(k) tpxij(1,20+k,uxt=gl.g(uxt04))))
+st[41:46,] = st[41:46,]*0.7
+st[46,]$wx = 0; st[46,]$dx = 0; st[46,]$ix = 0
+st[46,]$rx = st[46,]$lx
+print(st)
+@
 %%%%%%%%%%%%%%%%%%%%%
 % End
 %%%%%%%%%%%%%%%%%%%%%

@@ -4,8 +4,8 @@
 \alias{createLifeTable}
 \title{Create Ultimate Select Life Table}
 \usage{
-createLifeTable(x = global$x, w = global$w, radix = global$radix,
-  d = global$d)
+createLifeTable(x = gl.g(x), w = gl.g(w), radix = gl.g(radix),
+  d = gl.g(d))
 }
 \arguments{
 \item{x}{the starting age for the life table}

@@ -4,12 +4,16 @@
 \alias{tqx}
 \title{CDF of Future Lifetime}
 \usage{
-tqx(t, x = global$x, s = 0)
+tqx(t, x = gl.g(x), s = 0, uxt = gl.g(uxt))
 }
 \arguments{
 \item{t}{the number of years before death}
 
 \item{x}{the current age}
+
+\item{s}{select already used}
+
+\item{uxt}{the force of mortality (can be used to override the default force of mortality)}
 }
 \description{
 Probability that x dies in the next t years, given survival to age x

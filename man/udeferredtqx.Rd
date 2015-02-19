@@ -4,7 +4,7 @@
 \alias{udeferredtqx}
 \title{Deferred CDF of Future Lifetime}
 \usage{
-udeferredtqx(u, t = 1, x = global$x, s = 0)
+udeferredtqx(u, t = 1, x = gl.g(x), s = 0)
 }
 \arguments{
 \item{u}{the number of years to survive}

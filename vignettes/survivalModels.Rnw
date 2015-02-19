@@ -1,0 +1,77 @@
+\documentclass[landscape]{article}
+\usepackage{geometry}
+\usepackage{bookmark}
+
+%\VignetteIndexEntry{Survival Models}
+%\VignetteDepends{}
+%\VignetteKeywords{Vignettes}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\section{Survival Models}
+By overriding the force of mortality and global parameters, we can use makehams to implement a variety of survival models. For instance, it is possible to use a constant force of mortality, $\mu$ or a uniform pdf for $T(x)$.
+
+\subsection{Constant force of mortality}
+For CFM, use the \texttt{cfm} function
+<<echo=TRUE, fig=TRUE>>=
+library(makehams)
+cfm()
+
+tpx(5,20)
+Ax(20,c=1)
+annx(20,c=1)
+
+Ax(x=21,c=1) - annx(x=21,c=1)*Ax(x=20,c=1)/annx(x=20,c=1)
+
+thV(t=0,h=1,s=0.05)
+
+par(mfrow=c(2,2))
+plot(tpx, 0, 100)
+plot(tqx, 0, 100)
+plot(function(x) sapply(x, function(s) Ax(s,c=1)), 20, 50, ylab="Abarx", xlab="x")
+plot(function(x) sapply(x, function(s) annx(s,c=1)), 20, 50, ylab="abarx", xlab="x")
+@
+
+\subsection{De Moivre's Law}
+For De Moivre's Law, we can use the \texttt{demoivres} function
+<<echo=TRUE, fig=TRUE>>=
+demoivres()
+
+tpx(5,20)
+Ax(x=20,c=1)
+annx(x=20,c=1)
+
+Ax(x=21,c=1) - annx(x=21,c=1)*Ax(x=20,c=1)/annx(x=20,c=1)
+
+thV(t=0,h=1,s=0.05)
+
+par(mfrow=c(2,2))
+plot(tpx, 0, 50)
+plot(tqx, 0, 50)
+plot(function(x) sapply(x, function(s) Ax(s,c=1)), 20, 50, ylab="Abarx", xlab="x")
+plot(function(x) sapply(x, function(s) annx(s,c=1)), 20, 50, ylab="abarx", xlab="x")
+@
+
+\subsection{Makeham's Law}
+For Makeham's Law, we can use the \texttt{makehams} function
+<<echo=TRUE, fig=TRUE>>=
+makehams()
+
+tpx(5,20)
+Ax(x=20,c=1)
+annx(x=20,c=1)
+
+Ax(x=21,c=1) - annx(x=21,c=1)*Ax(x=20,c=1)/annx(x=20,c=1)
+
+thV(t=0,h=1,s=0.05)
+
+par(mfrow=c(2,2))
+plot(tpx, 0, 50)
+plot(tqx, 0, 50)
+plot(function(x) sapply(x, function(s) Ax(s,c=1)), 20, 50, ylab="Abarx", xlab="x")
+plot(function(x) sapply(x, function(s) annx(s,c=1)), 20, 50, ylab="abarx", xlab="x")
+@
+
+
+\end{document}
