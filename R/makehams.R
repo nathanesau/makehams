@@ -238,7 +238,6 @@ createInsuranceTable <- function(x=gl.g(x), w=gl.g(w), d=gl.g(d), n=5, i=gl.g(i)
 thV <- function(t=0, h=1, x=gl.g(x), tV=0, Pt = function(t) t^0 * gl.g(pi) , 
                 deltat = function(t) t^0 * log(1+gl.g(i)), bt = function(t) t^0, 
                 ut = function(t) uxt(t,x), s=0.01) {
-  gl.a(pi, Ax(x,c=1)/annx(x,c=1))
   m = t
   while(m <= (t + h)) {
     prev = (deltat(m)*tV + Pt(m) - ut(m)*(bt(m) - tV))*s
