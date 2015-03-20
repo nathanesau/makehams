@@ -4,7 +4,7 @@
 \name{gl}
 \alias{gl}
 \title{Global variables Environment}
-\format{\preformatted{<environment: 0x04c6106c> 
+\format{\preformatted{<environment: 0x04b849b8> 
 }}
 \usage{
 gl

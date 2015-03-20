@@ -3,7 +3,7 @@
 \docType{data}
 \name{i}
 \alias{i}
-\title{Interest Rate}
+\title{Effective Annual Interest Rate}
 \format{\preformatted{ NULL
 }}
 \usage{
