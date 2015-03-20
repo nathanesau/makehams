@@ -104,10 +104,15 @@ udeferredtqx <- function(u,t=1,x=gl.g(x),s=0) {
 #' @details See Appendix Tables of DHW 2nd edition
 #' @export
 createLifeTable <- function(x=gl.g(x), w=gl.g(w), radix=gl.g(radix), d=gl.g(d)) {
-  lt = data.frame(c(rep(NA,d), x:(w-d-1)),
+  if(d>0) {
+    lt = data.frame(c(rep(NA,d), x:(w-d-1)),
           lapply(0:(d-1), function(y) c(rep(NA,d), tail(tpx(0:(w-x-1),x-d,s=d)* radix,-d)/sapply(x:(w-d-1), function(x) tpx(d-y,x,y)))),
               tpx(0:(w-x-1),x-d,s=d)*radix, x:(w-1))
-  names(lt) =  c("x", sapply(0:(d-1), function(x) paste0("l[x]+",x)), paste0("lx+",d),"x+2")
+    names(lt) =  c("x", sapply(0:(d-1), function(x) paste0("l[x]+",x)), paste0("lx+",d),paste0("x+",d))
+  } else { # d = 0
+    lt = data.frame(x:(w-d-1),tpx(0:(w-x-1),x-d,s=d)*radix,x:(w-1))
+    names(lt) = c("x","lx","x")
+  }
   lt
 }
 
@@ -212,7 +217,7 @@ createInsuranceTable <- function(x=gl.g(x), w=gl.g(w), d=gl.g(d), n=5, i=gl.g(i)
     Ex[[t+1]] = sapply(x:(w-d), function(s) tEx(5,s,t,i,mt))
   }
   
-  it = data.frame(x:(w-d), Ax, Ex, x:(w-d)+2) # combine lists into data frame
+  it = data.frame(x:(w-d), Ax, Ex, x:(w-d)+d) # combine lists into data frame
   if(d>0) names(it) = c("x", paste0(ifelse(mt==1, "", mt), "A[x]"), 
                 sapply(1:(d-1), function(d) paste0(ifelse(mt==1, "", mt), "A[x]+", d)), 
                   paste0(ifelse(mt==1, "", mt), "Ax+", d), paste0(ifelse(mt==1, "", paste0(mt,":")), paste0(n,"E[x]")), 
