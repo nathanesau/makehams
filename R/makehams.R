@@ -1,4 +1,4 @@
-#' @title Interest Rate
+#' @title Effective Annual Interest Rate
 #' @description init
 #' @keywords internal
 i=NULL
