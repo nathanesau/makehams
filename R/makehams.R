@@ -213,12 +213,12 @@ createInsuranceTable <- function(x=gl.g(x), w=gl.g(w), d=gl.g(d), n=5, i=gl.g(i)
   }
   
   it = data.frame(x:(w-d), Ax, Ex, x:(w-d)+2) # combine lists into data frame
-  names(it) = c("x", paste0(ifelse(mt==1, "", mt), "A[x]"), 
+  if(d>0) names(it) = c("x", paste0(ifelse(mt==1, "", mt), "A[x]"), 
                 sapply(1:(d-1), function(d) paste0(ifelse(mt==1, "", mt), "A[x]+", d)), 
                   paste0(ifelse(mt==1, "", mt), "Ax+", d), paste0(ifelse(mt==1, "", paste0(mt,":")), paste0(n,"E[x]")), 
                 sapply(1:(d-1), function(d) paste0(ifelse(mt==1, "", paste0(mt,":")), paste0(n,"E[x]+"), d)),
-                  paste0(ifelse(mt==1, "", paste0(mt,":")), paste0(n, "Ex+"), d),
-                "x+2")
+                  paste0(ifelse(mt==1, "", paste0(mt,":")), paste0(n, "Ex+"), d), paste0("x+",d))
+  else names(it) = c("x","Ax",paste0(n,"Ex"),"x")
   head(it,-1)
 }
 
@@ -238,7 +238,6 @@ createInsuranceTable <- function(x=gl.g(x), w=gl.g(w), d=gl.g(d), n=5, i=gl.g(i)
 thV <- function(t=0, h=1, x=gl.g(x), tV=0, Pt = function(t) t^0 * gl.g(pi) , 
                 deltat = function(t) t^0 * log(1+gl.g(i)), bt = function(t) t^0, 
                 ut = function(t) uxt(t,x), s=0.01) {
-  gl.a(pi, Ax(x,c=1)/annx(x,c=1))
   m = t
   while(m <= (t + h)) {
     prev = (deltat(m)*tV + Pt(m) - ut(m)*(bt(m) - tV))*s
