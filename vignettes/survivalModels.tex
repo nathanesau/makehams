@@ -1,10 +1,21 @@
-\documentclass[landscape]{article}
-\usepackage{geometry}
-\usepackage{bookmark}
+\documentclass[12pt]{article}
 
-%\VignetteIndexEntry{Survival Models}
-%\VignetteDepends{}
-%\VignetteKeywords{Vignettes}
+\usepackage[margin=1.0in]{geometry}
+\usepackage{bookmark}
+\usepackage{fancyhdr}
+
+\newcommand{\thepackage}{makehams}
+
+\hypersetup{
+    colorlinks   = true,
+    citecolor    = blue,
+    linkcolor = blue,
+    urlcolor = blue
+}
+
+\pagestyle{fancy}
+\lhead{Nathan Esau <\href{mailto:nesau@sfu.ca}{\texttt{nesau@sfu.ca}}>}
+\rhead{Survival Models in \texttt{\thepackage}}
 
 \usepackage{Sweave}
 \begin{document}
@@ -40,20 +51,22 @@ For CFM, use the \texttt{cfm} function
 > Ax(x=21,c=1) - annx(x=21,c=1)*Ax(x=20,c=1)/annx(x=20,c=1)
 \end{Sinput}
 \begin{Soutput}
-[1] -5.551115e-17
+[1] 1.110223e-16
 \end{Soutput}
 \begin{Sinput}
 > thV(t=0,h=1,s=0.05)
 \end{Sinput}
 \begin{Soutput}
-[1] 0
+[1] 3.235954
 \end{Soutput}
 \begin{Sinput}
 > par(mfrow=c(2,2))
 > plot(tpx, 0, 100)
 > plot(tqx, 0, 100)
-> plot(function(x) sapply(x, function(s) Ax(s,c=1)), 20, 50, ylab="Abarx", xlab="x")
-> plot(function(x) sapply(x, function(s) annx(s,c=1)), 20, 50, ylab="abarx", xlab="x")
+> plot(function(x) 
++   sapply(x, function(s) Ax(s,c=1)), 20, 50, ylab="Abarx", xlab="x")
+> plot(function(x) 
++   sapply(x, function(s) annx(s,c=1)), 20, 50, ylab="abarx", xlab="x")
 \end{Sinput}
 \end{Schunk}
 \includegraphics{survivalModels-001}
@@ -90,14 +103,16 @@ For De Moivre's Law, we can use the \texttt{demoivres} function
 > thV(t=0,h=1,s=0.05)
 \end{Sinput}
 \begin{Soutput}
-[1] 0.003891068
+[1] 3.221968
 \end{Soutput}
 \begin{Sinput}
 > par(mfrow=c(2,2))
 > plot(tpx, 0, 50)
 > plot(tqx, 0, 50)
-> plot(function(x) sapply(x, function(s) Ax(s,c=1)), 20, 50, ylab="Abarx", xlab="x")
-> plot(function(x) sapply(x, function(s) annx(s,c=1)), 20, 50, ylab="abarx", xlab="x")
+> plot(function(x) 
++   sapply(x, function(s) Ax(s,c=1)), 20, 50, ylab="Abarx", xlab="x")
+> plot(function(x) 
++ sapply(x, function(s) annx(s,c=1)), 20, 50, ylab="abarx", xlab="x")
 \end{Sinput}
 \end{Schunk}
 \includegraphics{survivalModels-002}
@@ -134,14 +149,16 @@ For Makeham's Law, we can use the \texttt{makehams} function
 > thV(t=0,h=1,s=0.05)
 \end{Sinput}
 \begin{Soutput}
-[1] 0.002434979
+[1] 3.215593
 \end{Soutput}
 \begin{Sinput}
 > par(mfrow=c(2,2))
 > plot(tpx, 0, 50)
 > plot(tqx, 0, 50)
-> plot(function(x) sapply(x, function(s) Ax(s,c=1)), 20, 50, ylab="Abarx", xlab="x")
-> plot(function(x) sapply(x, function(s) annx(s,c=1)), 20, 50, ylab="abarx", xlab="x")
+> plot(function(x) 
++   sapply(x, function(s) Ax(s,c=1)), 20, 50, ylab="Abarx", xlab="x")
+> plot(function(x) 
++   sapply(x, function(s) annx(s,c=1)), 20, 50, ylab="abarx", xlab="x")
 \end{Sinput}
 \end{Schunk}
 \includegraphics{survivalModels-003}

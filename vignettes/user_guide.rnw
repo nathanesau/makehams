@@ -1,6 +1,3 @@
-%%%%%%%%%%%%%%%%%%%%%
-% Packages
-%%%%%%%%%%%%%%%%%%%%%
 \documentclass{article}  
 \usepackage{amsmath}		
 \usepackage{amssymb}
@@ -10,30 +7,23 @@
 \usepackage{titlesec}
 \usepackage[margin=1.0in]{geometry}
 \usepackage{graphicx}
-\usepackage{imakeidx}
-\usepackage[bookmarks=true]{hyperref}
-\usepackage{bookmark}
+\usepackage{hyperref}
 \usepackage{fancyhdr}
+
+\hypersetup{
+    colorlinks   = true,
+    citecolor    = blue,
+    linkcolor = blue,
+    urlcolor = blue
+}
+
+\newcommand{\thepackage}{makehams}
+
 \pagestyle{fancy}
-\lhead{Nathan Esau <nesau@sfu.ca>}
-\rhead{February 15th, 2015}
+\lhead{Nathan Esau <\href{mailto:nesau@sfu.ca}{\texttt{nesau@sfu.ca}}>}
+\rhead{User Guide}
 \allowdisplaybreaks
 
-%\VignetteIndexEntry{User Guide}
-%\VignetteDepends{}
-%\VignetteKeywords{Vignettes}
-
-%%%%%%%%%%%%%%%%%%%%%
-% Format
-%%%%%%%%%%%%%%%%%%%%%
-\makeatletter
-\makeatother
-\makeindex
-\graphicspath{ {images/} }
-
-%%%%%%%%%%%%%%%%%%%%%
-% Start
-%%%%%%%%%%%%%%%%%%%%%
 \begin{document}\large{}
 \SweaveOpts{concordance=TRUE}
 
@@ -149,7 +139,5 @@ st[46,]$wx = 0; st[46,]$dx = 0; st[46,]$ix = 0
 st[46,]$rx = st[46,]$lx
 print(st)
 @
-%%%%%%%%%%%%%%%%%%%%%
-% End
-%%%%%%%%%%%%%%%%%%%%%
+
 \end{document}
