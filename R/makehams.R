@@ -175,6 +175,8 @@ Ax <- function(x=gl.g(x),s=0,i=gl.g(i),m=1,n=gl.g(w)-x,c=0,e=0,mt=1) {
 #' @details By default calculates the first moment of discrete, whole life annuity due
 #' @export
 annx <- function(x=gl.g(x),s=0,i=gl.g(i),m=1,n=gl.g(w)-x,c=0,e=1,mt=1) {
+    w <- gl.g(w)
+    d <- gl.g(d)
     if(s>0) {
       s <- pmin(s,d)
       x <- max(0, x-s)
