@@ -151,12 +151,12 @@ d <- function(i=gl.g(i), m=1) {
 #' @details By default calculates first moment of discrete, whole life insurance
 #' @export
 Ax <- function(x=gl.g(x),s=0,i=gl.g(i),m=1,n=gl.g(w)-x,c=0,e=0,mt=1) {  
-  #   if(s>0) {
-  #     s <- pmin(s,d)
-  #     x <- max(0, x-s)
-  #   }
   d = gl.g(d)
   w = gl.g(w)
+#   if(s>0) {
+#     s <- pmin(s,d)
+#     x <- max(0, x-s)
+#   }
   tm = ifelse(c, sapply(x, function(x) integrate(function(t) tpx(t,x,s)*uxt(t+d-s,x-d+s)*v(i,t,delta=log(1+i)*mt), 0, n)$value),
               sapply(x, function(x) sum(udeferredtqx(seq(0,m*n-1)/m,1/m,x,s)*v(i,(seq(0,m*n-1)+1)/m,delta=log(1+i)*mt))))
                 ifelse(e,tm+tpx(n,x,s)*v(i,n,delta=log(1+i)*mt),tm)
@@ -175,10 +175,10 @@ Ax <- function(x=gl.g(x),s=0,i=gl.g(i),m=1,n=gl.g(w)-x,c=0,e=0,mt=1) {
 #' @details By default calculates the first moment of discrete, whole life annuity due
 #' @export
 annx <- function(x=gl.g(x),s=0,i=gl.g(i),m=1,n=gl.g(w)-x,c=0,e=1,mt=1) {
-  #   if(s>0) {
-  #     s <- pmin(s,d)
-  #     x <- max(0, x-s)
-  #   }
+#   if(s>0) {
+#     s <- pmin(s,d)
+#     x <- max(0, x-s)
+#   }
   ifelse(c, (1 - Ax(x,s,i,m,n,c,e,mt))/log(1+i), (1 - Ax(x,s,i,m,n,c,e,mt))/d(i,m))
 } 
 
@@ -218,15 +218,11 @@ createInsuranceTable <- function(x=gl.g(x), w=gl.g(w), d=gl.g(d), n=5, i=gl.g(i)
     rev(A)
   }
   
-  # reassign d in global environment
-  tmp <- gl.g(d)
-  gl.a(d, d)
-  
   p = lapply(0:d,  function(t) sapply((w-d-1):x, function(s) tpx(1,s,t)))
   for(t in d:0) {
     if(t==d) Ax[[t+1]] = recins(rev(p[[t+1]]), T) 
     else Ax[[t+1]] = recins(rev(p[[t+1]]), F, Ax[[t+2]])
-    Ex[[t+1]] = sapply(x:(w-d), function(s) tEx(n,s,t,i,mt))
+    Ex[[t+1]] = sapply(x:(w-d), function(s) tEx(5,s,t,i,mt))
   }
   
   it = data.frame(x:(w-d), Ax, Ex, x:(w-d)+d) # combine lists into data frame
@@ -235,14 +231,7 @@ createInsuranceTable <- function(x=gl.g(x), w=gl.g(w), d=gl.g(d), n=5, i=gl.g(i)
                   paste0(ifelse(mt==1, "", mt), "Ax+", d), paste0(ifelse(mt==1, "", paste0(mt,":")), paste0(n,"E[x]")), 
                 sapply(1:(d-1), function(d) paste0(ifelse(mt==1, "", paste0(mt,":")), paste0(n,"E[x]+"), d)),
                   paste0(ifelse(mt==1, "", paste0(mt,":")), paste0(n, "Ex+"), d), paste0("x+",d))
-  else {
-    names(it) = c("x", "Ax",paste0(n,"Ex"),"x")
-    if(mt > 1) names(it)[2:3] <- paste0(mt, ":", names(it)[2:3])
-  }
-  
-  # assign d back to its original value in global environment
-  gl.a(d, tmp)
-  
+  else names(it) = c("x","Ax",paste0(n,"Ex"),"x")
   head(it,-1)
 }
 
