@@ -293,6 +293,52 @@ tEx <- function(t,x=gl.g(x),s=0,i=gl.g(i),mt=1) {
   tpx(t,x,s,addtox=TRUE)*v(i,t,delta=mt*log(1+i))
 }
 
+#' @title EPV of a Deferred Insurance
+#' @description Calculates the expected present value of a deferred insurance
+#' @param u the length of the deferral period
+#' @param x the current age
+#' @param s the select used so far
+#' @param i the interest rate
+#' @param m the compounding frequency
+#' @param n the length of the term
+#' @param c indicator of continuous (1 if continuous)
+#' @param e indicator of endowment (1 if endowment)
+#' @param mt the moment of the insurance
+#' @details By default calculates first moment of discrete, whole life insurance. 
+#'          Also, this function is not reliable when n < m.
+#'          u can be a vector with length > 1 
+#'          x can be a vector with length > 1
+#'          s can be a vector with length > 1
+#'          n can be a vector with length > 1
+#' @export
+dAx <- function(u=0, x=gl.g(x),s=0,i=gl.g(i),m=1,
+               n=gl.g(w)-x,c=0,e=0,mt=1) {  
+  
+  # tEx * Ax+t form
+  tEx(t = u, x, s, i, mt) * Ax(x+u, s+u, i, m, n, c, e, mt)
+}
+
+#' @title EPV of a Deferred Annuity
+#' @description Calculates the expected present value of a deferred annuity
+#' @param u the length of the deferral period
+#' @param x the current age
+#' @param s the select used so far
+#' @param i the interest rate
+#' @param m the compounding frequency
+#' @param n the length of the term
+#' @param c indicator of continuous (1 if continuous)
+#' @param e indicator of endowment (NOTE of an annuity should always be 1)
+#' @param mt the moment of the insurance
+#' @details By default calculates the first moment of discrete, whole life annuity due. 
+#'          Also, this function is not reliable when n < m.
+#' @export
+dannx <- function(u=0, x=gl.g(x),s=0,i=gl.g(i),m=1,
+                 n=gl.g(w)-x,c=0,e=1,mt=1) {
+  
+  # tEx * ax+t form
+  tEx(t = u, x, s, i, mt) * annx(x+u, s+u, i, m, n, c, e, mt)
+} 
+
 #' @title Create Insurance Table
 #' @description Creates a table containing EPV's of whole life insurances (discrete)
 #' @param x the starting age
