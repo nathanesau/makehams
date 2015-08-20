@@ -151,10 +151,10 @@ d <- function(i=gl.g(i), m=1) {
 #' @details By default calculates first moment of discrete, whole life insurance
 #' @export
 Ax <- function(x=gl.g(x),s=0,i=gl.g(i),m=1,n=gl.g(w)-x,c=0,e=0,mt=1) {  
-  #   if(s>0) {
-  #     s <- pmin(s,d)
-  #     x <- max(0, x-s)
-  #   }
+    if(s>0) {
+      s <- pmin(s,d)
+      x <- max(0, x-s)
+    }
   d = gl.g(d)
   w = gl.g(w)
   tm = ifelse(c, sapply(x, function(x) integrate(function(t) tpx(t,x,s)*uxt(t+d-s,x-d+s)*v(i,t,delta=log(1+i)*mt), 0, n)$value),
@@ -175,10 +175,10 @@ Ax <- function(x=gl.g(x),s=0,i=gl.g(i),m=1,n=gl.g(w)-x,c=0,e=0,mt=1) {
 #' @details By default calculates the first moment of discrete, whole life annuity due
 #' @export
 annx <- function(x=gl.g(x),s=0,i=gl.g(i),m=1,n=gl.g(w)-x,c=0,e=1,mt=1) {
-  #   if(s>0) {
-  #     s <- pmin(s,d)
-  #     x <- max(0, x-s)
-  #   }
+    if(s>0) {
+      s <- pmin(s,d)
+      x <- max(0, x-s)
+    }
   ifelse(c, (1 - Ax(x,s,i,m,n,c,e,mt))/log(1+i), (1 - Ax(x,s,i,m,n,c,e,mt))/d(i,m))
 } 
 
