@@ -79,13 +79,20 @@ uxt <- function(t, x=gl.g(x), s=0, d=gl.g(d),
 #' @details Uses a default select period of 2 (for makeham's law).
 #'          t can be a vector with length > 1
 #'          x can be a vector with length > 1
+#'          s can be a vector with length > 1
 #' @export
 tpx <- function(t,x=gl.g(x),s=0,uxt=gl.g(uxt),addtox=FALSE) {  
   
-  # calculate survival function using numerical integration
   if(addtox) {
-    (x+t+s<gl.g(w))* sapply(t, function(t) 
-      exp(-integrate(function(l) uxt(l, x, s), 0, t)$value))
+    (x+t+s<gl.g(w))* mapply(function(t,x,s) {
+                              exp(-integrate(function(l) {
+                                              # calculate survival function using
+                                              # numerical integration
+                                              uxt(l, x, s)
+                                            }, 
+                                  0, t)$value
+                              )
+                            }, t, x, s)
   } else {
     tpx(t,pmax(0,x-s),s,uxt,addtox=TRUE)
   }
@@ -114,12 +121,23 @@ tqx <- function(t,x=gl.g(x),s=0,uxt=gl.g(uxt),addtox=FALSE) {
 #' @param addtox indicate whether s implies that age is x+s
 #' @details Can be calculated by splitting the CDF. Use tpx(u,x) - tpx(u+t,x) since it 
 #'          tends to be more accurate than tpx * tqx method.
+#'          u can be a vector with length > 1
+#'          t can be a vector with length > 1
+#'          x can be a vector with length > 1
+#'          s can be a vector with length > 1
 #' @export
 udeferredtqx <- function(u,t=1,x=gl.g(x),s=0,addtox=FALSE) {
   if(addtox) {
-    sapply(u, function(u) tpx(u, x, s, addtox=TRUE) - tpx(u + t, x, s, addtox=TRUE))
+    mapply( function(u,x,s,t) {
+              tpx(u, x, s, addtox=TRUE) - tpx(u + t, x, s, addtox=TRUE)
+            }, u, x, s, t
+          )
+
   } else {
-    sapply(u, function(u) tpx(u, x, s, addtox=FALSE) - tpx(u + t, x, addtox=FALSE))
+    mapply( function(u, x, s, t) {
+              tpx(u, x, s, addtox=FALSE) - tpx(u + t, x, addtox=FALSE)
+            }, u, x, s, t
+          )
   }
 }
 
@@ -194,6 +212,9 @@ d <- function(i=gl.g(i), m=1) {
 #' @param mt the moment of the insurance
 #' @details By default calculates first moment of discrete, whole life insurance. 
 #'          Also, this function is not reliable when n < m.
+#'          x can be a vector with length > 1
+#'          s can be a vector with length > 1
+#'          n can be a vector with length > 1
 #' @export
 Ax <- function(x=gl.g(x),s=0,i=gl.g(i),m=1,
                n=gl.g(w)-x,c=0,e=0,mt=1) {  
@@ -207,19 +228,22 @@ Ax <- function(x=gl.g(x),s=0,i=gl.g(i),m=1,
   }
   
   # calculate the value of an n year term insurance
-  tm = ifelse(c, sapply(x, function(x) {
-                              integrate(function(t) tpx(t,x,s,addtox=TRUE)*uxt(t+d-s,x-d+s)*
-                                          v(i,t,delta=log(1+i)*mt), 0, n)$value
-                            }),
-                  sapply(x, function(x) {
-                              sum(udeferredtqx(seq(0,m*n-1)/m,1/m,x,s,addtox=TRUE)*
-                                    v(i,(seq(0,m*n-1)+1)/m,delta=log(1+i)*mt))
-                            })
-              )
+  term = mapply(function(x,s,n) {
+                ifelse(c, integrate(function(t) {
+                                      tpx(t,x,s,addtox=TRUE)*uxt(t+d-s,x-d+s)*
+                                      v(i,t,delta=log(1+i)*mt)
+                                    }, 0, n)$value, 
+                           sum(udeferredtqx(seq(0,m*n-1)/m,1/m,x,s,addtox=TRUE)*
+                           v(i,(seq(0,m*n-1)+1)/m,delta=log(1+i)*mt))
+                       )
+                }, x, s, n)
   
   # increase the value of the insurance by nEx if it endowment
-  ifelse(e, tm+tpx(n,x,s,addtox=TRUE)*v(i,n,delta=log(1+i)*mt),
-         tm)
+  if(e) {
+      term + tpx(n,s,x,addtox=TRUE)*v(i,n,delta=log(1+i)*mt)
+  } else {
+    term
+  }
 }
 
 #' @title EPV of Annuity
@@ -246,9 +270,12 @@ annx <- function(x=gl.g(x),s=0,i=gl.g(i),m=1,
     x <- max(0, x-s)
   }
   
-  # (1 - Ax)/(d)
-  ifelse(c, (1 - Ax(x,s,i,m,n,c,e,mt))/log(1+i), 
-         (1 - Ax(x,s,i,m,n,c,e,mt))/d(i,m))
+  # (1 - Ax)/(d) form
+  if(c) {
+    (1 - Ax(x,s,i,m,n,c,e,mt))/log(1+i)
+  } else { 
+    (1 - Ax(x,s,i,m,n,c,e,mt))/d(i,m)
+  }
 } 
 
 #' @title Actuarial Present Value Factor
