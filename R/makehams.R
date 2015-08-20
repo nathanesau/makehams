@@ -210,11 +210,15 @@ createInsuranceTable <- function(x=gl.g(x), w=gl.g(w), d=gl.g(d), n=5, i=gl.g(i)
     rev(A)
   }
   
+  # reassign d in global environment
+  tmp <- gl.g(d)
+  gl.a(d, d)
+  
   p = lapply(0:d,  function(t) sapply((w-d-1):x, function(s) tpx(1,s,t)))
   for(t in d:0) {
     if(t==d) Ax[[t+1]] = recins(rev(p[[t+1]]), T) 
     else Ax[[t+1]] = recins(rev(p[[t+1]]), F, Ax[[t+2]])
-    Ex[[t+1]] = sapply(x:(w-d), function(s) tEx(5,s,t,i,mt))
+    Ex[[t+1]] = sapply(x:(w-d), function(s) tEx(n,s,t,i,mt))
   }
   
   it = data.frame(x:(w-d), Ax, Ex, x:(w-d)+d) # combine lists into data frame
@@ -223,7 +227,14 @@ createInsuranceTable <- function(x=gl.g(x), w=gl.g(w), d=gl.g(d), n=5, i=gl.g(i)
                   paste0(ifelse(mt==1, "", mt), "Ax+", d), paste0(ifelse(mt==1, "", paste0(mt,":")), paste0(n,"E[x]")), 
                 sapply(1:(d-1), function(d) paste0(ifelse(mt==1, "", paste0(mt,":")), paste0(n,"E[x]+"), d)),
                   paste0(ifelse(mt==1, "", paste0(mt,":")), paste0(n, "Ex+"), d), paste0("x+",d))
-  else names(it) = c("x","Ax",paste0(n,"Ex"),"x")
+  else {
+    names(it) = c("x", "Ax",paste0(n,"Ex"),"x")
+    if(mt > 1) names(it)[2:3] <- paste0(mt, ":", names(it)[2:3])
+  }
+  
+  # assign d back to its original value in global environment
+  gl.a(d, tmp)
+  
   head(it,-1)
 }
 
