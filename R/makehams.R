@@ -217,32 +217,30 @@ d <- function(i=gl.g(i), m=1) {
 #'          n can be a vector with length > 1
 #' @export
 Ax <- function(x=gl.g(x),s=0,i=gl.g(i),m=1,
-               n=gl.g(w)-x,c=0,e=0,mt=1) {  
-  
+               n=gl.g(w)-x,c=0,e=0,mt=1,h=function(t) t^0) {  
+    
   # adjust for addtox problem
   d = gl.g(d)
   w = gl.g(w)
-  if(s>0) {
-    s <- pmin(s,d)
-    x <- max(0, x-s)
-  }
-  
+  s <- ifelse(s>0, pmin(s,d), s)
+  x <- pmax(0,x-s)
+
   # calculate the value of an n year term insurance
   term = mapply(function(x,s,n) {
                 ifelse(c, integrate(function(t) {
                                       tpx(t,x,s,addtox=TRUE)*uxt(t+d-s,x-d+s)*
-                                      v(i,t,delta=log(1+i)*mt)
+                                      v(i,t,delta=log(1+i)*mt)*h(t)
                                     }, 0, n)$value, 
                            sum(udeferredtqx(seq(0,m*n-1)/m,1/m,x,s,addtox=TRUE)*
-                           v(i,(seq(0,m*n-1)+1)/m,delta=log(1+i)*mt))
+                           v(i,(seq(0,m*n-1)+1)/m,delta=log(1+i)*mt)*h((seq(m,m*n)+1)/m))
                        )
                 }, x, s, n)
   
   # increase the value of the insurance by nEx if it endowment
   if(e) {
-      term + tpx(n,s,x,addtox=TRUE)*v(i,n,delta=log(1+i)*mt)
+      term + tEx(n, x, s, i, mt, adjust=FALSE)
   } else {
-    term
+      term
   }
 }
 
@@ -260,21 +258,21 @@ Ax <- function(x=gl.g(x),s=0,i=gl.g(i),m=1,
 #'          Also, this function is not reliable when n < m.
 #' @export
 annx <- function(x=gl.g(x),s=0,i=gl.g(i),m=1,
-                 n=gl.g(w)-x,c=0,e=1,mt=1) {
+                 n=gl.g(w)-x,c=0,e=1,mt=1,h=function(t) t^0) {
   
   # adjust for add to x problem
-  w <- gl.g(w)
-  d <- gl.g(d)
-  if(s>0) {
-    s <- pmin(s,d)
-    x <- max(0, x-s)
-  }
+#   w <- gl.g(w)
+#   d <- gl.g(d)
+#   if(s>0) {
+#     s <- pmin(s,d)
+#     x <- max(0, x-s)
+#   }
   
   # (1 - Ax)/(d) form
   if(c) {
     (1 - Ax(x,s,i,m,n,c,e,mt))/log(1+i)
   } else { 
-    (1 - Ax(x,s,i,m,n,c,e,mt))/d(i,m)
+    (1 - Ax(x,s,i,m,n,c,e,mt,h))/d(i,m)
   }
 } 
 
@@ -287,7 +285,15 @@ annx <- function(x=gl.g(x),s=0,i=gl.g(i),m=1,
 #' @param mt the moment of the insurance
 #' @details Alternative actuarial "A" notation is also used for tEx
 #' @export
-tEx <- function(t,x=gl.g(x),s=0,i=gl.g(i),mt=1) {
+tEx <- function(t,x=gl.g(x),s=0,i=gl.g(i),mt=1,adjust=TRUE) {
+  
+  if(adjust) {
+    # adjust for add to x problem
+    d = gl.g(d)
+    w = gl.g(w)
+    s <- ifelse(s>0, pmin(s,d), s)
+    x <- pmax(0,x-s)
+  }
   
   # discount with interest and mortality
   tpx(t,x,s,addtox=TRUE)*v(i,t,delta=mt*log(1+i))

@@ -5,7 +5,7 @@
 \title{EPV of Annuity}
 \usage{
 annx(x = gl.g(x), s = 0, i = gl.g(i), m = 1, n = gl.g(w) - x, c = 0,
-  e = 1, mt = 1)
+  e = 1, mt = 1, h = function(t) t^0)
 }
 \arguments{
 \item{x}{the current age}
