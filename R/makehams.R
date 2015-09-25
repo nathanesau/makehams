@@ -232,7 +232,7 @@ Ax <- function(x=gl.g(x),s=0,i=gl.g(i),m=1,
                                       v(i,t,delta=log(1+i)*mt)*h(t)
                                     }, 0, n)$value, 
                            sum(udeferredtqx(seq(0,m*n-1)/m,1/m,x,s,addtox=TRUE)*
-                           v(i,(seq(0,m*n-1)+1)/m,delta=log(1+i)*mt)*h((seq(m,m*n)+1)/m))
+                           v(i,(seq(0,m*n-1)+1)/m,delta=log(1+i)*mt)*h((seq(0,m*n-1)+1)/m))
                        )
                 }, x, s, n)
   
